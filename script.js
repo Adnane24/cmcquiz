@@ -74,22 +74,22 @@ const ADMIN_CREDENTIALS = {
 // ============================================
 // Sample Questions Database
 // ============================================
-let questions = [
-  {
-    id: 1,
-    question: "What does HTML stand for?",
-    options: [
-      "HyperText Markup Language",
-      "High Tech Modern Language",
-      "Home Tool Markup Language",
-      "Hyperlinks and Text Markup Language",
-    ],
-    correct: 0,
-  },
-  {
-    id: 2,
-    question: "Which CSS property is used to control the text size?",
-    options: ["font-style", "text-size", "font-size", "text-style"],
+// let questions = [
+//   {
+//     id: 1,
+//     question: "What does HTML stand for?",
+//     options: [
+//       "HyperText Markup Language",
+//       "High Tech Modern Language",
+//       "Home Tool Markup Language",
+//       "Hyperlinks and Text Markup Language",
+//     ],
+//     correct: 0,
+//   },
+//   {
+//     id: 2,
+//     question: "Which CSS property is used to control the text size?",
+//     options: ["font-style", "text-size", "font-size", "text-style"],
     correct: 2,
   },
   {
@@ -184,13 +184,25 @@ let quizState = {
 };
 
 // Poles (departments) - load from storage or fallback to defaults
-let poles = [
-  "Web Development",
-  "Mobile Development",
-  "Data Science",
-  "Cloud Computing",
-  "Cybersecurity",
-];
+// let poles = [
+//   "Web Development",
+//   "Mobile Development",
+//   "Data Science",
+//   "Cloud Computing",
+//   "Cybersecurity",
+// ];
+
+async function loadPoles() {
+  const response = await fetch("data/poles.json");
+  const poles = await response.json();
+  return poles;
+}
+
+async function loadQuestions() {
+    const response = await fetch('data/questions.json');
+    const questions = await response.json();
+    return questions;
+}
 
 // Site settings (modifiable from admin)
 let siteSettings = {
@@ -270,21 +282,23 @@ function handleStudentLogin(event) {
   document.getElementById("studentLoginForm").reset();
 }
 
-// Populate the pole select element dynamically
-function populatePoleOptions() {
-  const select = document.getElementById("pole");
-  if (!select) return;
-  // keep placeholder
-  const placeholder = select.querySelector('option[value=""]');
-  select.innerHTML = "";
-  if (placeholder) select.appendChild(placeholder);
-  poles.forEach((p) => {
-    const opt = document.createElement("option");
-    opt.value = p;
-    opt.textContent = p;
-    select.appendChild(opt);
+// Replace pole display logic with async displayPoles
+async function displayPoles() {
+  const poleContainer = document.getElementById("pole-container");
+  const poles = await loadPoles();
+
+  poleContainer.innerHTML = "";
+
+  poles.forEach((pole) => {
+    const button = document.createElement("button");
+    button.className = "pole-button";
+    button.textContent = pole.name;
+    button.onclick = () => startQuiz(pole.id);
+    poleContainer.appendChild(button);
   });
 }
+
+displayPoles();
 
 // ============================================
 // Admin Login
@@ -829,7 +843,7 @@ function savePoleForm() {
     poles.push(name);
   }
   localStorage.setItem("poles", JSON.stringify(poles));
-  populatePoleOptions();
+  displayPoles();
   renderPolesManager();
   hidePoleForm();
 }
@@ -842,7 +856,7 @@ function deletePole(idx) {
     return;
   poles.splice(idx, 1);
   localStorage.setItem("poles", JSON.stringify(poles));
-  populatePoleOptions();
+  displayPoles();
   renderPolesManager();
 }
 
@@ -1106,7 +1120,7 @@ document.addEventListener("DOMContentLoaded", () => {
   );
 
   // Populate pole select options
-  populatePoleOptions();
+  displayPoles();
 
   if (savedUser) {
     const user = JSON.parse(savedUser);
@@ -1141,4 +1155,16 @@ function closeAlreadyPassedModal() {
   if (modal) {
     modal.style.display = "none";
   }
+}
+
+async function startQuiz(poleId) {
+    const questions = await loadQuestions();
+
+    // show only questions for this pole
+    const filtered = questions.filter(q => q.pole === poleId);
+
+    currentQuestions = filtered;
+    currentIndex = 0;
+
+    showQuestion();
 }
