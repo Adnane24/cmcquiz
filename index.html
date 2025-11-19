@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Treasure Quest - Adventure Challenge</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Login Page -->
+    <div id="loginPage" class="page active">
+        <div class="container">
+            <div class="login-container">
+                <div class="login-header">
+                    <h1>🏴‍☠️ Treasure Quest</h1>
+                    <p class="subtitle">Adventure Challenge Platform</p>
+                </div>
+
+                <!-- Tab Navigation -->
+                <div class="login-tabs">
+                    <button class="tab-btn active" onclick="switchLoginTab('student')">
+                        🧭 Treasure Hunter
+                    </button>
+                    <button class="tab-btn" onclick="switchLoginTab('admin')">
+                        🏴‍☠️ Pirate Captain
+                    </button>
+                </div>
+
+                <!-- Student Login -->
+                <div id="studentLoginTab" class="login-tab active">
+                    <form id="studentLoginForm" onsubmit="handleStudentLogin(event)">
+                        <div class="form-group">
+                            <label for="studentName">Treasure Hunter Name</label>
+                            <input 
+                                type="text" 
+                                id="studentName" 
+                                placeholder="Enter your name" 
+                                required
+                            >
+                        </div>
+
+                        <div class="form-group">
+                            <label for="pole">Crew (Team/Class)</label>
+                            <select id="pole" required>
+                                <option value="">-- Select your crew --</option>
+                                <!-- Options will be populated dynamically by script.js -->
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="phoneNumber">Contact Number</label>
+                            <input 
+                                type="tel" 
+                                id="phoneNumber" 
+                                placeholder="Enter your phone number" 
+                                required
+                            >
+                        </div>
+
+                        <button type="submit" class="btn btn-primary btn-large">⛵ Begin the Quest</button>
+                    </form>
+                </div>                <!-- Admin Login -->
+                <div id="adminLoginTab" class="login-tab">
+                    <form id="adminLoginForm" onsubmit="handleAdminLogin(event)">
+                        <div class="form-group">
+                            <label for="adminUsername">Pirate Name</label>
+                            <input 
+                                type="text" 
+                                id="adminUsername" 
+                                placeholder="Enter pirate name" 
+                                required
+                            >
+                        </div>
+
+                        <div class="form-group">
+                            <label for="adminPassword">Secret Code</label>
+                            <input 
+                                type="password" 
+                                id="adminPassword" 
+                                placeholder="Enter secret code" 
+                                required
+                            >
+                        </div>
+
+                        <p class="admin-hint">Demo: admin / 1234</p>
+
+                        <button type="submit" class="btn btn-primary btn-large">🏴‍☠️ Access Ship</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Student Menu Page -->
+    <div id="studentMenuPage" class="page">
+        <div class="container">
+            <div class="card menu-card">
+                <div class="menu-header">
+                    <h1>Ahoy, <span id="welcomeName"></span>! 🧭</h1>
+                    <p class="user-info">
+                        <strong>Crew:</strong> <span id="displayPole"></span>
+                    </p>
+                </div>
+
+                <div class="menu-buttons">
+                    <button class="btn btn-primary btn-large" onclick="startChallenge()">
+                        🗺️ Embark on Quest
+                    </button>
+                    <button class="btn btn-secondary btn-large" onclick="backToLogin()">
+                        ← Back to Login
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Admin Dashboard Page -->
+    <div id="adminDashboardPage" class="page">
+        <div class="container wide-container">
+            <div class="admin-header">
+                <div class="admin-title">
+                    <h1>🏴‍☠️ Captain's Command Center</h1>
+                    <p>Manage treasure hunters and quests</p>
+                </div>
+                <button class="btn btn-danger" onclick="handleLogout()">🚪 Leave Ship</button>
+            </div>
+
+            <div class="admin-controls">
+                <button class="btn btn-secondary" onclick="refreshParticipantList()">
+                    🔄 Refresh Crew
+                </button>
+                <button class="btn btn-secondary" onclick="openQuestionsManager()">
+                    �️ Manage Riddles
+                </button>
+                <button class="btn btn-secondary" onclick="openPolesManager()">
+                    ⚓ Manage Crews
+                </button>
+                <button class="btn btn-secondary" onclick="openSiteSettings()">
+                    ⚙️ Ship Settings
+                </button>
+                <button class="btn btn-danger" onclick="clearAllResults()">
+                    🗑️ Clear Records
+                </button>
+            </div>
+
+            <div class="admin-content">
+                <h2>⚓ Treasure Hunters Crew List</h2>
+                <div class="table-responsive">
+                    <!-- Grouped participants by Pole (collapsible sections) -->
+                    <div id="participantGroups" class="participant-groups">
+                        <div id="participantGroupsEmpty" style="text-align: center; color: #999; padding: 1rem;">No participants yet</div>
+                    </div>
+                </div>
+
+                <div class="admin-stats">
+                    <div class="stat-card">
+                        <div class="stat-number" id="totalParticipants">0</div>
+                        <div class="stat-label">Total Hunters</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="averageScore">0%</div>
+                        <div class="stat-label">Avg Loot Score</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="highestScore">0</div>
+                        <div class="stat-label">Best Treasure</div>
+                    </div>
+                </div>
+
+                <!-- Questions manager (hidden by default) -->
+                <div id="questionsManager" class="card" style="margin-top:20px; display:none;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                        <h3>🗺️ Riddles Manager</h3>
+                        <div>
+                            <button class="btn btn-primary" onclick="showQuestionForm('add')">+ Add Question</button>
+                            <button class="btn" onclick="openQuestionsManager(true)">Close</button>
+                        </div>
+                    </div>
+
+                    <div id="questionForm" style="display:none; margin-bottom:12px;">
+                        <div class="form-group">
+                            <label>Riddle Text</label>
+                            <input type="text" id="qText" placeholder="Enter riddle text">
+                        </div>
+                        <div class="form-group">
+                            <label>Clue A</label>
+                            <input type="text" id="qOpt0" placeholder="Clue A">
+                        </div>
+                        <div class="form-group">
+                            <label>Clue B</label>
+                            <input type="text" id="qOpt1" placeholder="Clue B">
+                        </div>
+                        <div class="form-group">
+                            <label>Clue C</label>
+                            <input type="text" id="qOpt2" placeholder="Clue C">
+                        </div>
+                        <div class="form-group">
+                            <label>Clue D</label>
+                            <input type="text" id="qOpt3" placeholder="Clue D">
+                        </div>
+                        <div class="form-group">
+                            <label>Correct Option (0-3)</label>
+                            <input type="number" id="qCorrect" min="0" max="3" value="0">
+                        </div>
+                        <div style="display:flex; gap:10px;">
+                            <button class="btn btn-primary" onclick="saveQuestionForm()">Save</button>
+                            <button class="btn" onclick="hideQuestionForm()">Cancel</button>
+                        </div>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table id="questionsTable" class="admin-table admin-table--compact">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Question</th>
+                                    <th>Options</th>
+                                    <th>Correct</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="questionsTableBody">
+                                <tr><td colspan="5" style="text-align:center; color:#999;">No questions</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <!-- Poles manager (hidden) -->
+                <div id="polesManager" class="card" style="margin-top:20px; display:none;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                        <h3>⚓ Crews Manager</h3>
+                        <div>
+                            <button class="btn btn-primary" onclick="showPoleForm('add')">+ Add Crew</button>
+                            <button class="btn" onclick="openPolesManager(true)">Close</button>
+                        </div>
+                    </div>
+
+                    <div id="poleForm" style="display:none; margin-bottom:12px;">
+                        <div class="form-group">
+                            <label>Crew Name</label>
+                            <input type="text" id="poleName" placeholder="Enter crew name">
+                        </div>
+                        <div style="display:flex; gap:10px;">
+                            <button class="btn btn-primary" onclick="savePoleForm()">Save</button>
+                            <button class="btn" onclick="hidePoleForm()">Cancel</button>
+                        </div>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table id="polesTable" class="admin-table admin-table--compact">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Crew Name</th>
+                                    <th>Count</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="polesTableBody">
+                                <tr><td colspan="4" style="text-align:center; color:#999;">No poles configured</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Site settings (hidden) -->
+                <div id="siteSettings" class="card" style="margin-top:20px; display:none;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                        <h3>⚙️ Ship Settings</h3>
+                        <div>
+                            <button class="btn" onclick="openSiteSettings(true)">Close</button>
+                        </div>
+                    </div>
+
+                    <div style="margin-bottom:12px;">
+                        <div class="form-group">
+                            <label>Ship Title</label>
+                            <input type="text" id="siteTitleInput" placeholder="Treasure Quest">
+                        </div>
+                        <div class="form-group">
+                            <label>Gold Color (hex)</label>
+                            <input type="text" id="sitePrimaryColor" placeholder="#d4af37">
+                        </div>
+                        <div style="display:flex; gap:10px;">
+                            <button class="btn btn-primary" onclick="saveSiteSettings()">Save Settings</button>
+                            <button class="btn" onclick="resetSiteSettings()">Reset</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quiz Page -->
+    <div id="quizPage" class="page">
+        <div class="container">
+            <div class="quiz-header">
+                <div class="timer-section">
+                    <div class="timer-display">
+                        <span id="timerMinutes">2</span>:<span id="timerSeconds">00</span>
+                    </div>
+                    <p class="timer-label">Time Left ⏳</p>
+                </div>
+                
+                <div class="progress-container">
+                    <div class="progress-bar">
+                        <div id="progressFill" class="progress-fill"></div>
+                    </div>
+                    <p class="progress-text">
+                        Question <span id="currentQuestion">1</span> of <span id="totalQuestions">10</span>
+                    </p>
+                </div>
+            </div>
+
+            <div class="card quiz-card">
+                <div class="question-section">
+                    <h2 id="questionText"></h2>
+                </div>
+
+                <div class="answers-section">
+                    <div id="answersContainer"></div>
+                </div>
+
+                <div class="quiz-footer">
+                    <div class="quiz-actions">
+                        <button class="btn btn-secondary" onclick="skipQuestion()">
+                            ⏭️ Skip Riddle
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Results Page -->
+    <div id="resultsPage" class="page">
+        <div class="container">
+            <div class="card results-card">
+                <div class="results-header">
+                    <h1>Quest Complete! 🎉</h1>
+                    <p class="results-message">Great job, <span id="resultName"></span>! You've found the treasure!</p>
+                </div>
+
+                <div class="score-display">
+                    <div class="score-circle">
+                        <span id="finalScore">0</span>
+                        <span class="score-label">Loot Found</span>
+                    </div>
+                </div>
+
+                <div class="score-percentage">
+                    <p id="scorePercentage">0% 💎</p>
+                </div>
+
+                <div class="results-buttons">
+                    
+                    <button class="btn btn-secondary btn-large" onclick="goBackToLogin()">
+                        🏠 Return to Port
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Leaderboard Page -->
+    <div id="leaderboardPage" class="page">
+        <div class="container">
+            <div class="card leaderboard-card">
+                <div class="leaderboard-header">
+                    <h1>🏆 Treasure Hall of Fame</h1>
+                    <button class="btn btn-secondary" onclick="goToStudentMenu()">← Back to Menu</button>
+                </div>
+
+                <div id="leaderboardContent"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Custom Modal for Already Passed Message -->
+    <div id="alreadyPassedModal" class="modal" style="display:none;">
+        <div class="modal-overlay" onclick="closeAlreadyPassedModal()"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>✅ Adventure Already Complete</h2>
+            </div>
+            <div class="modal-body">
+                <p>You have already completed the Treasure Quest. Thank you for your adventure!</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" onclick="closeAlreadyPassedModal()">OK</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
