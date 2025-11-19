@@ -8,5 +8,5 @@
   { "id": "pole-7", "name": "Agriculture", "capacity": 5 },
   { "id": "pole-8", "name": "Commerce", "capacity": 5 },
   { "id": "pole-9", "name": "Logistique", "capacity": 5 },
-  { "id": "pole-10", "name": "Design", "capacity": 5 }
+  { "id": "pole-10", "name": "Peche", "capacity": 5 }
 ]
