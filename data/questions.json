@@ -1,0 +1,30 @@
+[
+  {
+    "id": "q1",
+    "poleId": "pole-1",
+    "question": "Quel est 2 + 2 ?",
+    "options": ["1", "2", "3", "4"],
+    "correctIndex": 3
+  },
+  {
+    "id": "q2",
+    "poleId": "pole-1",
+    "question": "Quel nombre vient après 6 dans cette suite : 2,4,6,?",
+    "options": ["7", "8", "9", "10"],
+    "correctIndex": 1
+  },
+  {
+    "id": "q3",
+    "poleId": "pole-2",
+    "question": "Quel est l’intrus : chat, chien, voiture, cheval ?",
+    "options": ["chat", "chien", "voiture", "cheval"],
+    "correctIndex": 2
+  },
+  {
+    "id": "q4",
+    "poleId": "pole-2",
+    "question": "Complétez la suite : A, B, C, ?",
+    "options": ["D", "E", "F", "G"],
+    "correctIndex": 0
+  }
+]

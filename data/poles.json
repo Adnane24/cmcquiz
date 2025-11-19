@@ -1,0 +1,12 @@
+[
+  { "id": "pole-1", "name": "Informatique", "capacity": 5 },
+  { "id": "pole-2", "name": "Tourisme", "capacity": 5 },
+  { "id": "pole-3", "name": "Infrastructure digitale", "capacity": 5 },
+  { "id": "pole-4", "name": "Marketing", "capacity": 5 },
+  { "id": "pole-5", "name": "Management", "capacity": 5 },
+  { "id": "pole-6", "name": "Finance", "capacity": 5 },
+  { "id": "pole-7", "name": "Agriculture", "capacity": 5 },
+  { "id": "pole-8", "name": "Commerce", "capacity": 5 },
+  { "id": "pole-9", "name": "Logistique", "capacity": 5 },
+  { "id": "pole-10", "name": "Design", "capacity": 5 }
+]
